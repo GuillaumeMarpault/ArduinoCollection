@@ -4,7 +4,7 @@
 // #############################################################################
 // #
 // # Name		: Queue.h
-// # Version	: 1.0
+// # Version		: 1.0
 // # Author		: Guillaume Marpault <guillaume.marpault@sfr.fr>
 // # Date		: 16/01/2018
 //
