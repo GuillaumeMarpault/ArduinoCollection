@@ -3,18 +3,18 @@
 // #############################################################################
 // #
 // # Name		: Collection_Tool.h
-// # Version	: 1.0
+// # Version		: 1.0
 // # Author		: Guillaume Marpault <guillaume.marpault@sfr.fr>
 // # Date		: 16/01/2018
 //
-// # Description: [FR] Méthodes utilisés par les classes conteneur :
-//    - Une implémentation basique des assertions avec une sortie
-//    sur le port série.
-//    - La méthode nextPowerOfTwo utlisé pour le calcul de l'allocation
-//    mémoire de la classe Vector. Cette méthode est extraite du code
+// # Description: [FR] MÃ©thodes utilisÃ©s par les classes conteneur :
+//    - Une implÃ©mentation basique des assertions avec une sortie
+//    sur le port sÃ©rie.
+//    - La mÃ©thode nextPowerOfTwo utlisÃ© pour le calcul de l'allocation
+//    mÃ©moire de la classe Vector. Cette mÃ©thode est extraite du code
 //    source de Qt :
 //    https://code.woboq.org/qt5/qtbase/src/corelib/kernel/qmath.h.html
-//    - Une implémentation basique de l'opérateur 'placement new'.
+//    - Une implÃ©mentation basique de l'opÃ©rateur 'placement new'.
 //
 // #  This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
