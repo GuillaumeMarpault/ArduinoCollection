@@ -8,8 +8,8 @@
 // # Author		: Guillaume Marpault <guillaume.marpault@sfr.fr>
 // # Date		: 16/01/2018
 //
-// # Description: [FR] Liste chainée de type FIFO. Les classes Queue
-//    sont partagées implicitement et ont mécanisme de copy-on-write.
+// # Description: [FR] Liste chainÃ©e de type FIFO. Les classes Queue
+//    sont partagÃ©es implicitement et ont mÃ©canisme de copy-on-write.
 //
 // #  This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -288,8 +288,6 @@ namespace ard_c
 		{
 			if (_d->_ref.isShared())
 			{
-				Serial.println("detach");
-				Serial.println();
 				QueueData<T> *d = reinterpret_cast<QueueData<T>*>(_d->deep_copy());
 				_d->_ref.deref();
 				_d = d;
