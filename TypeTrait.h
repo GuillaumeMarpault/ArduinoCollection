@@ -3,13 +3,13 @@
 // #############################################################################
 // #
 // # Name		: TypeTrait.h
-// # Version	: 1.0
+// # Version		: 1.0
 // # Author		: Guillaume Marpault <guillaume.marpault@sfr.fr>
 // # Date		: 16/01/2018
 //
 // # Description: [FR] Classes de traits extraite du fichier type_traits.h
-//    de la bibliothèque standard c++. Certaines modifications ont été
-//    apportés pour les besoins des classes conteneur.
+//    de la bibliothÃ¨que standard c++. Certaines modifications ont Ã©tÃ©
+//    apportÃ©s pour les besoins des classes conteneur.
 //    Source de type_traits.h :
 //    https://gcc.gnu.org/onlinedocs/gcc-4.6.2/libstdc++/api/a01090_source.html
 //
@@ -37,8 +37,8 @@ namespace ard_c
 {
 
 	// integral_constant
-	// Struct de base à tout les traits de type.
-	// Permet de les stocker sous une expression constante optimisée.
+	// Struct de base Ã  tout les traits de type.
+	// Permet de les stocker sous une expression constante optimisÃ©e.
 	template<typename T, T _v>
 	struct integral_constant
 	{
@@ -50,10 +50,10 @@ namespace ard_c
 
 
 	// _DEFINE_SPEC
-	// Version abrégée de la version std. Seul les paramètres nécessaires
-	// à is_integral, is_floating_point et is_enum sont défini ici.
-	// Permet de spécialisé une struct _Trait pour renvoyer true ou false,
-	// valeur défini par _Val, pour un type _Type donné.
+	// Version abrÃ©gÃ©e de la version std. Seul les paramÃ¨tres nÃ©cessaires
+	// Ã  is_integral, is_floating_point et is_enum sont dÃ©fini ici.
+	// Permet de spÃ©cialisÃ© une struct _Trait pour renvoyer true ou false,
+	// valeur dÃ©fini par _Val, pour un type _Type donnÃ©.
 #ifndef _DEFINE_SPEC
 	#define _DEFINE_SPEC(_Trait, _Type, _Val) \
 	template<> \
@@ -63,17 +63,17 @@ namespace ard_c
 
 
 	// false_type
-	// Struct de commodité renvoyant false quoi qu'il arrive.
+	// Struct de commoditÃ© renvoyant false quoi qu'il arrive.
 	typedef integral_constant<bool, false> false_type;
 
 
 	// __is_integral_helper
-	// Défini quels sont les types integral.
-	// L'implémentation de base renvoie false.
+	// DÃ©fini quels sont les types integral.
+	// L'implÃ©mentation de base renvoie false.
 	template<typename>
 	struct __is_integral_helper : public false_type
 	{ };
-	// On spécialise __is_integral_helper pour renvoyer true sur les types integral
+	// On spÃ©cialise __is_integral_helper pour renvoyer true sur les types integral
 	// avec la macro _DEFINE_SPEC
 	_DEFINE_SPEC(__is_integral_helper, bool, true)
 	_DEFINE_SPEC(__is_integral_helper, char, true)
@@ -90,12 +90,12 @@ namespace ard_c
 
 
 	// __is_floating_point_helper
-	// Défini quels sont les types flottant;
-	// L'implémentation de base renvoie false.
+	// DÃ©fini quels sont les types flottant;
+	// L'implÃ©mentation de base renvoie false.
 	template<typename>
 	struct __is_floating_point_helper : public false_type
 	{ };
-	// On spécialise __is_floating_point_helper pour renvoyer true les types flottants
+	// On spÃ©cialise __is_floating_point_helper pour renvoyer true les types flottants
 	// avec la macro _DEFINE_SPEC
 	_DEFINE_SPEC(__is_floating_point_helper, float, true)
 	_DEFINE_SPEC(__is_floating_point_helper, double, true)
@@ -104,13 +104,13 @@ namespace ard_c
 
 	// remove_volatile
 	// Supprime la composante volatile d'un type T pour renvoyer
-	// systématiquement son type 'non volatile'.
+	// systÃ©matiquement son type 'non volatile'.
 	//
-	// Version non volatile -> renvoie le type T fourni à l'identique
+	// Version non volatile -> renvoie le type T fourni Ã  l'identique
 	template<typename T>
 	struct remove_volatile
 	{ typedef T type; };
-	// Spécialisation volatile -> si le type T fourni est volatile on renvoie T sans la composante volatile
+	// SpÃ©cialisation volatile -> si le type T fourni est volatile on renvoie T sans la composante volatile
 	template<typename T>
 	struct remove_volatile<T volatile>
 	{ typedef T type; };
@@ -118,20 +118,20 @@ namespace ard_c
 
 	// remove_const
 	// Supprime la composante const d'un type T pour renvoyer
-	// systématiquement son type 'non constant'.
+	// systÃ©matiquement son type 'non constant'.
 	//
-	// Version non constante -> renvoie le type T à l'identique
+	// Version non constante -> renvoie le type T Ã  l'identique
 	template<typename T>
 	struct remove_const
 	{ typedef T type; };
-	// Spécialisation const -> si le type T fourni est constant on renvoie T sans la composante const
+	// SpÃ©cialisation const -> si le type T fourni est constant on renvoie T sans la composante const
 	template<typename T>
 	struct remove_const<T const>
 	{ typedef T type; };
 
 
 	// remove_cv
-	// Aggrégation de remove_volatile et remove_const.
+	// AggrÃ©gation de remove_volatile et remove_const.
 	// Permet de renvoyer un type T sans sa composante 'cv-qualifier'.
 	template<typename T>
 	struct remove_cv
@@ -141,7 +141,7 @@ namespace ard_c
 
 
 	// is_integral
-	// Défini si un type T est integral, soit un type bool, char, short, int, long et long long,
+	// DÃ©fini si un type T est integral, soit un type bool, char, short, int, long et long long,
 	// en prenant en compte les variante unsigned et leur cv-qualifier.
 	template<typename T>
 	struct is_integral
@@ -149,7 +149,7 @@ namespace ard_c
 	{ };
 
 	// is_floating_point
-	// Défini si un type T est flottant, soit un type float, double et long double,
+	// DÃ©fini si un type T est flottant, soit un type float, double et long double,
 	// en prenant en compte leur cv-qualifier.
 	template<typename T>
 	struct is_floating_point 
@@ -158,7 +158,7 @@ namespace ard_c
 
 
 	// is_atomic
-	// Aggrégation de is_integral et is_floating_point. Permet de lister tous les types atomiques.
+	// AggrÃ©gation de is_integral et is_floating_point. Permet de lister tous les types atomiques.
 	template<typename T>
 	struct is_atomic
 		: public integral_constant<bool, is_integral<T>::value || is_floating_point<T>::value>
@@ -166,10 +166,10 @@ namespace ard_c
 
 
 	// is_enum
-	// Défini si un type T est une énumération.
-	//   /\    Nécessite la méthode magique __is_enum du compilateur.
-	//  /!!\   Si le compilateur ne posséde pas la méthode cette implémentation ne fonctionne pas.
-	//  ¯¯¯¯
+	// DÃ©fini si un type T est une Ã©numÃ©ration.
+	//   /\    NÃ©cessite la mÃ©thode magique __is_enum du compilateur.
+	//  /!!\   Si le compilateur ne possÃ©de pas la mÃ©thode cette implÃ©mentation ne fonctionne pas.
+	//  Â¯Â¯Â¯Â¯
 	template<typename T>
 	struct is_enum : public integral_constant<bool, __is_enum(T)>
 	{ };
