@@ -4,14 +4,14 @@
 // #############################################################################
 // #
 // # Name		: Collection_TypeTrait.h
-// # Version	: 1.0
+// # Version		: 1.0
 // # Author		: Guillaume Marpault <guillaume.marpault@sfr.fr>
 // # Date		: 16/01/2018
 //
-// # Description: [FR] Classes de traits renvoyant certaines propriétés
-//	  des types T fournis. Ces classes sont utilisés par les classes 
-//    conteneur pour définir leurs comportements.
-//    Les struct 'is_enum' et 'is_atomic' sont défini dans TypeTrait.h.
+// # Description: [FR] Classes de traits renvoyant certaines propriÃ©tÃ©s
+//	  des types T fournis. Ces classes sont utilisÃ©s par les classes 
+//    conteneur pour dÃ©finir leurs comportements.
+//    Les struct 'is_enum' et 'is_atomic' sont dÃ©fini dans TypeTrait.h.
 //
 // #  This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
