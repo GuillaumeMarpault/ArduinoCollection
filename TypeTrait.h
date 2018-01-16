@@ -1,23 +1,32 @@
 
 
-
-/*********************************************************************/
-//	_____ TypeTrait _____
+// #############################################################################
+// #
+// # Name		: TypeTrait.h
+// # Version	: 1.0
+// # Author		: Guillaume Marpault <guillaume.marpault@sfr.fr>
+// # Date		: 16/01/2018
+//
+// # Description: [FR] Classes de traits extraite du fichier type_traits.h
+//    de la bibliothèque standard c++. Certaines modifications ont été
+//    apportés pour les besoins des classes conteneur.
+//    Source de type_traits.h :
+//    https://gcc.gnu.org/onlinedocs/gcc-4.6.2/libstdc++/api/a01090_source.html
+//
+// #  This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //	
-//	Traits pour les types atomic repris de std::TypeTrait.
-//	Fourni les méthodes nécessaires pour définir la catégorie des
-//	différents types utilisés (enum, integral...).
-//
-//	Seules les méthodes utiles aux traits des collections sont
-//	implémentés.
-//
-//	On défini dans le namespace 'ard_c' tout comme les collections
-//	qui vont utilisés ces traits.
-//
-//	Source de type_traits.h :
-//	https://gcc.gnu.org/onlinedocs/gcc-4.6.2/libstdc++/api/a01090_source.html
-//	
-/*********************************************************************/
+// #############################################################################
 
 
 
