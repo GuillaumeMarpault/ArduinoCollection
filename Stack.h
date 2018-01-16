@@ -3,12 +3,12 @@
 // #############################################################################
 // #
 // # Name		: Stack.h
-// # Version	: 1.0
+// # Version		: 1.0
 // # Author		: Guillaume Marpault <guillaume.marpault@sfr.fr>
 // # Date		: 16/01/2018
 //
-// # Description: [FR] Classe basé sur Vector. Fourni juste les méthodes
-//    de comodités push() et pop() pour coller au nommage standard.
+// # Description: [FR] Classe basÃ© sur Vector. Fourni juste les mÃ©thodes
+//    de comoditÃ©s push() et pop() pour coller au nommage standard.
 //
 // #  This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
