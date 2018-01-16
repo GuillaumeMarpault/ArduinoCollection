@@ -3,11 +3,11 @@
 // #############################################################################
 // #
 // # Name		: RefCount.h
-// # Version	: 1.0
+// # Version		: 1.0
 // # Author		: Guillaume Marpault <guillaume.marpault@sfr.fr>
 // # Date		: 16/01/2018
 //
-// # Description: [FR] Fourni un comptage de référence basique utilisé
+// # Description: [FR] Fourni un comptage de rÃ©fÃ©rence basique utilisÃ©
 //    par les classes conteneur.
 //
 // #  This program is free software: you can redistribute it and/or modify
