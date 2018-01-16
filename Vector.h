@@ -3,13 +3,13 @@
 // #############################################################################
 // #
 // # Name		: Vector.h
-// # Version	: 1.0
+// # Version		: 1.0
 // # Author		: Guillaume Marpault <guillaume.marpault@sfr.fr>
 // # Date		: 16/01/2018
 //
-// # Description: [FR] Conteneur indéxé basé sur un array.
-//    Les classes Vector sont partagés implicitement et ont un mécanisme
-//    de copy-on-write. Fourni un temps d'accès constant en lecture.
+// # Description: [FR] Conteneur indÃ©xÃ© basÃ© sur un array.
+//    Les classes Vector sont partagÃ©s implicitement et ont un mÃ©canisme
+//    de copy-on-write. Fourni un temps d'accÃ¨s constant en lecture.
 //
 // #  This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
