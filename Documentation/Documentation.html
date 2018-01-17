@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html lang="fr-fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -66,11 +66,38 @@
             color: #8c8c8c;
             font-style: italic;
         }
+        .subclass_ctn {
+            padding: 0 0 0 20px;
+            border-left: 1px solid #eaeaea;
+        }
     </style>
 </head>
 <body>
     <div class="ctn">
         <h1>Arduino collection documentation</h1>
+
+        <h3>Sommaire</h3>
+        <ul>
+            <li>
+                <a href="#vector" class="bold">Vector</a>
+            </li>
+            <li>
+                <a href="#stack" class="bold">Stack</a>
+            </li>
+            <li>
+                <a href="#queue" class="bold">Queue</a>
+            </li>
+        </ul>
+        
+
+
+        <h3  id="cpy_on_wrt">Partage implicite et copy-on-write</h3>
+        <div class="class_desc">
+            Les classes <a href="#vector">Vector</a>, <a href="#stack">Stack</a> et <a href="#queue">Queue</a> sont partagés implicitement et fournissent un mécanisme de copy-on-write : Dupliqué une de ces instances via leur constructeur de copie
+            ou l'opérateur = fait une shallow copy de l'instance d'origine, la data interne n'est pas dupliqué et les deux instances sont 'partagés'. 
+            Dès qu'une modification est apporté à l'un des deux instances le partage est rompu et une deep copy
+            de la data interne est faite.
+        </div>
 
         <hr />
 
@@ -96,14 +123,11 @@
                 minimum, on peut utiliser la méthode <a href="#vector_reserve">reserve()</a> et éviter 3 phase de réallocation.
             </div>
             <div class="class_desc">
-                Cette classe est partagé implicitement et fourni un mécanisme de copy-on-write : Dupliqué un Vector via le <a href="#vector_ctor_cpy">constructeur de copie</a>
-                ou <a href="#vector_op_set">l'opérateur =</a> fait une shallow copy du Vector d'origine, la data interne n'est pas dupliqué et les deux instances sont 'partagés'
-                ( mécanisme fourni par la classe <a href="#refcount">RefCount</a> ). Dès qu'une modification est apporté à l'un des deux Vector le partage est rompu et une deep copy 
-                est faite en dupliquant la data interne.
+                Cette classe est partagé implicitement et fourni un mécanisme de copy-on-write ( <a href="#cpy_on_wrt">voir la description générale</a> ).
             </div>
             <div class="class_desc">
-                Des itérateurs sont disponibles avec les classes <a href="#vector_iterator">Iterator</a> et <a href="#vector_citerator">ConstIterator</a>. L'utilisation de la classe
-                <a href="#vector_iterator">Iterator</a> entrainera systèmatiquement une deep copy du Vector. Pour des utilisations en lecture seule, utilisé des <a href="#vector_citerator">ConstIterator</a> 
+                Des itérateurs sont disponibles avec les classes <a href="#vector_it">Iterator</a> et <a href="#vector_cit">ConstIterator</a>. L'utilisation de la classe
+                <a href="#vector_it">Iterator</a> entrainera systèmatiquement une deep copy du Vector. Pour des utilisations en lecture seule, utilisé des <a href="#vector_cit">ConstIterator</a> 
                 qui éviteront de rompre le partage avec les Vector associés.
             </div>
 
@@ -143,20 +167,36 @@
                 Détruit le Vector. S'il n'est pas partagé avec un autre Vector la data interne est également détruite et la mémoire est libérée.
             </div>
 
-            <!-- SIZE -->
-            <div class="func_title" id="vector_size">
-                <span class="func_class">int</span> size() <span class="const">const</span>
+            <!-- APPEND -->
+            <div class="func_title" id="vector_append">
+                <span class="func_class">void</span> append(<span class="const">const</span> <span class="func_class">T</span> &<span class="func_val">value</span>)
             </div>
             <div class="class_desc">
-                Renvoie le nombre d'index stocké dans le Vector.
+                Ajoute 'value' au dernier index du Vector.
             </div>
 
-            <!-- ISEMPTY -->
-            <div class="func_title" id="vector_isempty">
-                <span class="func_class">bool</span> isEmpty() <span class="const">const</span>
+            <!-- APPEND 2 -->
+            <div class="func_title" id="vector_append2">
+                <span class="func_class">void</span> append(<span class="const">const</span> <span class="func_class">Vector</span>&lt;<span class="func_class">T</span>&gt; &<span class="func_val">other</span>)
             </div>
             <div class="class_desc">
-                Renvoie true si la liste est vide, sinon renvoie false.
+                Ajoute l'ensemble des variables contenu dans 'other' à la fin du Vector.
+            </div>
+
+            <!-- AT -->
+            <div class="func_title" id="vector_at">
+                <span class="const">const</span> <span class="func_class">T</span> &at(<span class="func_class">int</span> <span class="func_val">index</span>) <span class="const">const</span>
+            </div>
+            <div class="class_desc">
+                Retourne la variable stocké à l'index 'index'. L'accès est en lecture seule, si vous souhaitez faire une modification utilisé <a href="#vector_op_at">l'opérateur []</a>.
+            </div>
+
+            <!-- BEGIN -->
+            <div class="func_title" id="vector_begin">
+                <span class="func_class">Iterator</span> begin()
+            </div>
+            <div class="class_desc">
+                Retourne un <a href="#vector_it">Iterator</a> pointant sur le premier index du Vector.
             </div>
 
             <!-- CAPACITY -->
@@ -167,12 +207,28 @@
                 Retourne la taille de l'allocation mémoire de la data interne. Cette valeur peut être plus grande que celle renvoyé par <a href="#vector_size">size()</a>.
             </div>
 
-            <!-- AT -->
-            <div class="func_title" id="vector_at">
-                <span class="const">const</span> <span class="func_class">T</span> &at(<span class="func_class">int</span> <span class="func_val">index</span>) <span class="const">const</span>
+            <!-- CBEGIN -->
+            <div class="func_title" id="vector_cbegin">
+                <span class="func_class">ConstIterator</span> cbegin() <span class="const">const</span>
             </div>
             <div class="class_desc">
-                Retourne la variable stocké à l'index 'index'. L'accès est en lecture seule, si vous souhaitez faire une modification utlilisé <a href="#vector_op_at">l'opérateur []</a>.
+                Retourne un <a href="#vector_cit">ConstIterator</a> pointant sur le premier index du Vector.
+            </div>
+
+            <!-- CEND -->
+            <div class="func_title" id="vector_cend">
+                <span class="func_class">ConstIterator</span> cend() <span class="const">const</span>
+            </div>
+            <div class="class_desc">
+                Retourne un <a href="#vector_cit">ConstIterator</a> pointant sur un index fictif se situant un cran après le dernier index du Vector.
+            </div>
+
+            <!-- END -->
+            <div class="func_title" id="vector_end">
+                <span class="func_class">Iterator</span> end()
+            </div>
+            <div class="class_desc">
+                Retourne un <a href="#vector_it">Iterator</a> pointant sur un index fictif se situant un cran après le dernier index du Vector.
             </div>
 
             <!-- FIRST -->
@@ -191,6 +247,22 @@
                 Retourne la variable au premier index du Vector, en lecture seule.
             </div>
 
+            <!-- INSERT -->
+            <div class="func_title" id="vector_insert">
+                <span class="func_class">void</span> insert(<span class="const">const</span> <span class="func_class">T</span> &<span class="func_val">value</span>, <span class="func_class">int</span> <span class="func_val">before</span>)
+            </div>
+            <div class="class_desc">
+                Ajoute 'value' juste avant la variable à l'index 'before'. Du fait du fonctionnement de l'allocation mémoire, cette méthode est plus lente que la méthode <a href="#vector_append">append()</a>.
+            </div>
+
+            <!-- ISEMPTY -->
+            <div class="func_title" id="vector_isempty">
+                <span class="func_class">bool</span> isEmpty() <span class="const">const</span>
+            </div>
+            <div class="class_desc">
+                Renvoie true si le Vector est vide, sinon renvoie false.
+            </div>
+
             <!-- LAST -->
             <div class="func_title" id="vector_last">
                 <span class="func_class">T</span> &last()
@@ -205,40 +277,6 @@
             </div>
             <div class="class_desc">
                 Retourne la variable au dernier index du Vector, en lecture seule.
-            </div>
-
-            <!-- RESERVE -->
-            <div class="func_title" id="vector_reserve">
-                <span class="func_class">void</span> reserve(<span class="func_class">int</span> <span class="func_val">alloc</span>)
-            </div>
-            <div class="class_desc">
-                Alloue 'alloc' index de donnée en mémoire à la data interne du Vector. La valeur de 'alloc' est toujours ramené à la puissance de 2 supérieur.
-                Cette méthode est utile lorsque l'on peut prévoire l'occupation mémoire du Vector : cela permet d'optimiser les ajouts de données
-                en évitant de réallouer plusieurs fois la mémoire.
-            </div>
-
-            <!-- APPEND -->
-            <div class="func_title" id="vector_append">
-                <span class="func_class">void</span> append(<span class="const">const</span> <span class="func_class">T</span> &<span class="func_val">value</span>)
-            </div>
-            <div class="class_desc">
-                Ajoute 'value' au dernier index du Vector.
-            </div>
-
-            <!-- APPEND 2 -->
-            <div class="func_title" id="vector_append2">
-                <span class="func_class">void</span> append(<span class="const">const</span> <span class="func_class">Vector</span>&lt;<span class="func_class">T</span>&gt; &<span class="func_val">other</span>)
-            </div>
-            <div class="class_desc">
-                Ajoute l'ensemble des variables contenu dans 'other' à la fin du Vector.
-            </div>
-
-            <!-- INSERT -->
-            <div class="func_title" id="vector_insert">
-                <span class="func_class">void</span> insert(<span class="const">const</span> <span class="func_class">T</span> &<span class="func_val">value</span>, <span class="func_class">int</span> <span class="func_val">before</span>)
-            </div>
-            <div class="class_desc">
-                Ajoute 'value' juste avant la variable à l'index 'before'. Du fait du fonctionnement de l'allocation mémoire, cette méthode est plus lente que la méthode <a href="#vector_append">append()</a>.
             </div>
 
             <!-- PREPEND -->
@@ -273,6 +311,24 @@
                 Supprime la variable au dernier index du Vector.
             </div>
 
+            <!-- RESERVE -->
+            <div class="func_title" id="vector_reserve">
+                <span class="func_class">void</span> reserve(<span class="func_class">int</span> <span class="func_val">alloc</span>)
+            </div>
+            <div class="class_desc">
+                Alloue 'alloc' index de donnée en mémoire à la data interne du Vector. La valeur de 'alloc' est toujours ramené à la puissance de 2 supérieur.
+                Cette méthode est utile lorsque l'on peut prévoire l'occupation mémoire du Vector : cela permet d'optimiser les ajouts de données
+                en évitant de réallouer plusieurs fois la mémoire.
+            </div>
+
+            <!-- SIZE -->
+            <div class="func_title" id="vector_size">
+                <span class="func_class">int</span> size() <span class="const">const</span>
+            </div>
+            <div class="class_desc">
+                Renvoie le nombre d'index stocké dans le Vector.
+            </div>
+
             <!-- TAKE -->
             <div class="func_title" id="vector_take">
                 <span class="func_class">T</span> take(<span class="func_class">int</span> <span class="func_val">index</span>)
@@ -296,40 +352,6 @@
             <div class="class_desc">
                 Supprime la variable au dernier index du Vector et la renvoie.
             </div>
-
-            <!-- BEGIN -->
-            <div class="func_title" id="vector_begin">
-                <span class="func_class">Iterator</span> begin()
-            </div>
-            <div class="class_desc">
-                Retourne un <a href="#vector_it">Iterator</a> pointant sur le premier index du Vector.
-            </div>
-
-            <!-- END -->
-            <div class="func_title" id="vector_end">
-                <span class="func_class">Iterator</span> end()
-            </div>
-            <div class="class_desc">
-                Retourne un <a href="#vector_it">Iterator</a> pointant sur un index fictif se situant un cran après le dernier index du Vector.
-            </div>
-
-            <!-- CBEGIN -->
-            <div class="func_title" id="vector_cbegin">
-                <span class="func_class">ConstIterator</span> cbegin() <span class="const">const</span>
-            </div>
-            <div class="class_desc">
-                Retourne un <a href="#vector_cit">ConstIterator</a> pointant sur le premier index du Vector.
-            </div>
-
-            <!-- CEND -->
-            <div class="func_title" id="vector_cend">
-                <span class="func_class">ConstIterator</span> cend() <span class="const">const</span>
-            </div>
-            <div class="class_desc">
-                Retourne un <a href="#vector_cit">ConstIterator</a> pointant sur un index fictif se situant un cran après le dernier index du Vector.
-            </div>
-
-
 
 
             <h3>Opérateurs</h3>
@@ -387,10 +409,489 @@
 
 
 
+            <h3>Classes internes</h3>
+
             <!-- ITERATOR -->
             <div class="subclass_ctn">
+                <h2 id="vector_it">Iterator</h2>
+                <div class="class_sub">
+                    <span>déclaration : </span><span class="bold">Vector&lt;T&gt;::Iterator</span>
+                </div>
+
+                <h3>Description</h3>
+
+                <div class="class_desc">
+                    Les Iterator sont des objets pointant sur une des variables contenu dans le <a href="#vector">Vector</a> ayant fourni l'Iterator. 
+                    Ils servent de curseur permettant de ce déplacer dans le <a href="#vector">Vector</a>, d'accéder et de modifier ses variables.
+                    Instancier un Iterator avec les méthodes <a href="#vector_begin">begin()</a> et <a href="#vector_end">end()</a> implique une rupture 
+                    du partage entre les <a href="#vector">Vector</a> et une deep-copy ( <a href="#cpy_on_wrt">voir partage implicite</a> ).
+                </div>
+                <div class="class_desc">
+                    Si vous souhaitez utiliser les Iterator en lecture seule utiliser la classe <a href="#vector_cit">ConstIterator</a>, fourni par les méthodes 
+                    <a href="#vector_cbegin">cbegin()</a> et <a href="#vector_cend">cend()</a>, qui ne provoquera pas de deep-copy.
+                </div>
+
+
+
+                <h3>Fonctions public</h3>
+
+                <!-- CTOR -->
+                <div class="func_title" id="vector_it_ctor">
+                    Iterator()
+                </div>
+                <div class="class_desc">
+                    Construit un nouvel Iterator vierge, non associé à un Vector. Ce constructeur ne devrait pas être appelé, pour instancier un nouvel Iterator 
+                    utilisé les méthodes <a href="#vector_begin">begin()</a> ou <a href="#vector_end">end()</a> de la classe <a href="#vector">Vector</a>.
+                </div>
+
+                <!-- CTOR 2 -->
+                <div class="func_title" id="vector_it_ctor2">
+                    Iterator(<span class="func_class">T</span> *<span class="func_val">n</span>)
+                </div>
+                <div class="class_desc">
+                    Construit un nouvel Iterator pointant sur la variable 'n'. La variable 'n' doit être un pointeur vers une variable de type T contenu dans le <a href="#vector">Vector</a> 
+                    que l'on veut parcourir. Il est plus pratique d'utiliser les méthodes <a href="#vector_begin">begin()</a> ou <a href="#vector_end">end()</a> de la classe <a href="#vector">Vector</a> 
+                    pour contruire de nouveaux Iterator. Ce constructeur permet malgré tout de construire un Iterator pointant directement vers un index au milieu d'un <a href="#vector">Vector</a>.
+                </div>
+
+
+
+                <h3>Opérateurs</h3>
+
+                <!-- * -->
+                <div class="func_title" id="vector_it_op_star">
+                    <span class="func_class">T</span>& operator*() <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne la variable à laquelle l'Iterator est associé.
+                </div>
+
+                <!-- -> -->
+                <div class="func_title" id="vector_it_op_arrow">
+                    <span class="func_class">T</span>* operator->() <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne un pointeur vers la variable à laquelle l'Iterator est associé.
+                </div>
+
+                <!-- == -->
+                <div class="func_title" id="vector_it_op_equal">
+                    <span class="func_class">bool</span> operator==(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si l'Iterator actuel et 'other' sont associés à la même variable.
+                </div>
+
+                <!-- == -->
+                <div class="func_title" id="vector_it_op_equal2">
+                    <span class="func_class">bool</span> operator==(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si l'Iterator actuel et le <a href="#vector_cit">ConstIterator</a> 'other' sont associés à la même variable.
+                </div>
+
+                <!-- != -->
+                <div class="func_title" id="vector_it_op_diff">
+                    <span class="func_class">bool</span> operator!=(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si l'Iterator actuel et 'other' ne sont pas associés à la même variable.
+                </div>
+
+                <!-- != -->
+                <div class="func_title" id="vector_it_op_diff2">
+                    <span class="func_class">bool</span> operator!=(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si l'Iterator actuel et le <a href="#vector_cit">ConstIterator</a> 'other' ne sont pas associés à la même variable.
+                </div>
+
+                <!-- < -->
+                <div class="func_title" id="vector_it_op_less">
+                    <span class="func_class">bool</span> operator<(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si l'Iterator actuel pointe sur une variable situé à un index inférieur à celui de la variable pointé par 'other'.
+                </div>
+
+                <!-- < -->
+                <div class="func_title" id="vector_it_op_less2">
+                    <span class="func_class">bool</span> operator<(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si l'Iterator actuel pointe sur une variable situé à un index inférieur à celui de la variable pointé par le <a href="#vector_cit">ConstIterator</a> 'other'.
+                </div>
+
+                <!-- <= -->
+                <div class="func_title" id="vector_it_op_lessequal">
+                    <span class="func_class">bool</span> operator<=(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si l'Iterator actuel pointe sur une variable situé à un index inférieur ou égal à celui de la variable pointé par 'other'.
+                </div>
+
+                <!-- <= -->
+                <div class="func_title" id="vector_it_op_lessequal2">
+                    <span class="func_class">bool</span> operator<=(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si l'Iterator actuel pointe sur une variable situé à un index inférieur ou égal à celui de la variable pointé par le <a href="#vector_cit">ConstIterator</a> 'other'.
+                </div>
+
+                <!-- > -->
+                <div class="func_title" id="vector_it_op_great">
+                    <span class="func_class">bool</span> operator>(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si l'Iterator actuel pointe sur une variable situé à un index supérieur à celui de la variable pointé par 'other'.
+                </div>
+
+                <!-- > -->
+                <div class="func_title" id="vector_it_op_great2">
+                    <span class="func_class">bool</span> operator>(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si l'Iterator actuel pointe sur une variable situé à un index supérieur à celui de la variable pointé par le <a href="#vector_cit">ConstIterator</a> 'other'.
+                </div>
+
+                <!-- >= -->
+                <div class="func_title" id="vector_it_op_greatequal">
+                    <span class="func_class">bool</span> operator>=(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si l'Iterator actuel pointe sur une variable situé à un index supérieur ou égal à celui de la variable pointé par 'other'.
+                </div>
+
+                <!-- >= -->
+                <div class="func_title" id="vector_it_op_greatequal2">
+                    <span class="func_class">bool</span> operator>=(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si l'Iterator actuel pointe sur une variable situé à un index supérieur ou égal à celui de la variable pointé par le <a href="#vector_cit">ConstIterator</a> 'other'.
+                </div>
+
+                <!-- ++ -->
+                <div class="func_title" id="vector_it_op_preinc">
+                    <span class="func_class">Iterator</span>& operator++()
+                </div>
+                <div class="class_desc">
+                    Opérateur de pré-incrément. Fait avancer l'Iterator d'un index dans le <a href="#vector">Vector</a> et renvoie une référence sur ce même Iterator. 
+                    Du fait du fonctionnement du pré-incrément, cet opérateur est plus rapide que l'opérateur de post-incrément <a href="#vector_it_op_postinc">operator++(int)</a>.
+                </div>
+
+                <!-- ++ -->
+                <div class="func_title" id="vector_it_op_postinc">
+                    <span class="func_class">Iterator</span> operator++(<span class="func_class">int</span>)
+                </div>
+                <div class="class_desc">
+                    Opérateur de post-incrément. Fait avancer l'Iterator d'un index dans le <a href="#vector">Vector</a> et renvoie une copie de cet Iterator.
+                    Du fait du fonctionnement du post-incrément, cet opérateur est moins rapide que l'opérateur de pré-incrément <a href="#vector_it_op_preinc">operator++()</a>.
+                </div>
+
+                <!-- -- -->
+                <div class="func_title" id="vector_it_op_predec">
+                    <span class="func_class">Iterator</span>& operator--()
+                </div>
+                <div class="class_desc">
+                    Opérateur de pré-décrément. Fait reculer l'Iterator d'un index dans le <a href="#vector">Vector</a> et renvoie une référence sur ce même Iterator.
+                    Du fait du fonctionnement du pré-décrément, cet opérateur est plus rapide que l'opérateur de post-décrément <a href="#vector_it_op_postdec">operator--(int)</a>.
+                </div>
+
+                <!-- -- -->
+                <div class="func_title" id="vector_it_op_postdec">
+                    <span class="func_class">Iterator</span> operator--(<span class="func_class">int</span>)
+                </div>
+                <div class="class_desc">
+                    Opérateur de post-décrément. Fait reculer l'Iterator d'un index dans le <a href="#vector">Vector</a> et renvoie une copie de cet Iterator.
+                    Du fait du fonctionnement du post-décrément, cet opérateur est moins rapide que l'opérateur de pré-décrément <a href="#vector_it_op_predec">operator--()</a>.
+                </div>
+
+                <!-- += -->
+                <div class="func_title" id="vector_it_op_pluseq">
+                    <span class="func_class">Iterator</span>& operator+=(<span class="func_class">int</span> <span class="func_val">i</span>)
+                </div>
+                <div class="class_desc">
+                    Fait avancer l'Iterator de 'i' index dans le <a href="#vector">Vector</a> et renvoie une référence sur ce même Iterator.
+                </div>
+
+                <!-- -= -->
+                <div class="func_title" id="vector_it_op_minuseq">
+                    <span class="func_class">Iterator</span>& operator-=(<span class="func_class">int</span> <span class="func_val">i</span>)
+                </div>
+                <div class="class_desc">
+                    Fait reculer l'Iterator de 'i' index dans le <a href="#vector">Vector</a> et renvoie une référence sur ce même Iterator.
+                </div>
+
+                <!-- + -->
+                <div class="func_title" id="vector_it_op_plus">
+                    <span class="func_class">Iterator</span> operator+(<span class="func_class">int</span> <span class="func_val">i</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Renvoie un nouvel Iterator à 'i' index de plus dans le <a href="#vector">Vector</a>.
+                </div>
+
+                <!-- - -->
+                <div class="func_title" id="vector_it_op_minus">
+                    <span class="func_class">Iterator</span> operator-(<span class="func_class">int</span> <span class="func_val">i</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Renvoie un nouvel Iterator à 'i' index de moins dans le <a href="#vector">Vector</a>.
+                </div>
+
+                <!-- - -->
+                <div class="func_title" id="vector_it_op_minus2">
+                    <span class="func_class">int</span> operator-(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne le nombre d'index séparant deux Iterator. Si le résultat est positif alors l'Iterator 'other' se situe à un index supérieur à l'Iterator courant. Si le résultat est 
+                    négatif alors l'Iterator 'other' est à index inférieur à l'Iterator courant.
+                </div>
 
             </div>
+
+
+
+            <br />
+
+            <!-- CONSTITERATOR -->
+            <div class="subclass_ctn">
+                <h2 id="vector_cit">ConstIterator</h2>
+                <div class="class_sub">
+                    <span>déclaration : </span><span class="bold">Vector&lt;T&gt;::ConstIterator</span>
+                </div>
+
+                <h3>Description</h3>
+
+                <div class="class_desc">
+                    Les ConstIterator sont des objets pointant sur une des variables contenu dans le <a href="#vector">Vector</a> ayant fourni le ConstIterator.
+                    Ils servent de curseur permettant de ce déplacer dans le <a href="#vector">Vector</a> et d'accéder à ses variables en lecture seule.
+                    Instancier un ConstIterator avec les méthodes <a href="#vector_cbegin">cbegin()</a> et <a href="#vector_cend">cend()</a> ne provoque pas de rupture
+                    du partage entre les <a href="#vector">Vector</a> ( <a href="#cpy_on_wrt">voir partage implicite</a> ).
+                </div>
+                <div class="class_desc">
+                    Si vous souhaitez modifier les variables du <a href="#vector">Vector</a> à partir de l'itérateur, utilisé la classe <a href="#vector_it">Iterator</a>, fourni par les méthodes
+                    <a href="#vector_begin">begin()</a> et <a href="#vector_end">end()</a>.
+                </div>
+
+
+
+                <h3>Fonctions public</h3>
+
+                <!-- CTOR -->
+                <div class="func_title" id="vector_cit_ctor">
+                    ConstIterator()
+                </div>
+                <div class="class_desc">
+                    Construit un nouveau ConstIterator vierge, non associé à un Vector. Ce constructeur ne devrait pas être appelé, pour instancier un nouveau ConstIterator
+                    utilisé les méthodes <a href="#vector_cbegin">cbegin()</a> ou <a href="#vector_cend">cend()</a> de la classe <a href="#vector">Vector</a>.
+                </div>
+
+                <!-- CTOR 2 -->
+                <div class="func_title" id="vector_cit_ctor2">
+                    ConstIterator(<span class="func_class">T</span> *<span class="func_val">n</span>)
+                </div>
+                <div class="class_desc">
+                    Construit un nouveau ConstIterator pointant sur la variable 'n'. La variable 'n' doit être un pointeur vers une variable de type T contenu dans le <a href="#vector">Vector</a>
+                    que l'on veut parcourir. Il est plus pratique d'utiliser les méthodes <a href="#vector_cbegin">cbegin()</a> ou <a href="#vector_cend">cend()</a> de la classe <a href="#vector">Vector</a>
+                    pour contruire de nouveaux ConstIterator. Ce constructeur permet malgré tout de construire un ConstIterator pointant directement vers un index au milieu d'un <a href="#vector">Vector</a>.
+                </div>
+
+
+
+                <h3>Opérateurs</h3>
+
+                <!-- * -->
+                <div class="func_title" id="vector_cit_op_star">
+                    <span class="const">const</span> <span class="func_class">T</span>& operator*() <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne la variable à laquelle le ConstIterator est associé, en lecture seule.
+                </div>
+
+                <!-- -> -->
+                <div class="func_title" id="vector_cit_op_arrow">
+                    <span class="const">const</span> <span class="func_class">T</span>* operator->() <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne un pointeur vers la variable à laquelle le ConstIterator est associé, en lecture seule.
+                </div>
+
+                <!-- == -->
+                <div class="func_title" id="vector_cit_op_equal">
+                    <span class="func_class">bool</span> operator==(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si le ConstIterator actuel et l'<a href="#vector_it">Iterator</a> 'other' sont associés à la même variable.
+                </div>
+
+                <!-- == -->
+                <div class="func_title" id="vector_cit_op_equal2">
+                    <span class="func_class">bool</span> operator==(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si le ConstIterator actuel et 'other' sont associés à la même variable.
+                </div>
+
+                <!-- != -->
+                <div class="func_title" id="vector_cit_op_diff">
+                    <span class="func_class">bool</span> operator!=(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si le ConstIterator actuel et l'<a href="#vector_it">Iterator</a> 'other' ne sont pas associés à la même variable.
+                </div>
+
+                <!-- != -->
+                <div class="func_title" id="vector_cit_op_diff2">
+                    <span class="func_class">bool</span> operator!=(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si le ConstIterator actuel et 'other' ne sont pas associés à la même variable.
+                </div>
+
+                <!-- < -->
+                <div class="func_title" id="vector_cit_op_less">
+                    <span class="func_class">bool</span> operator<(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si le ConstIterator actuel pointe sur une variable situé à un index inférieur à celui de la variable pointé par l'<a href="#vector_it">Iterator</a> 'other'.
+                </div>
+
+                <!-- < -->
+                <div class="func_title" id="vector_cit_op_less2">
+                    <span class="func_class">bool</span> operator<(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si le ConstIterator actuel pointe sur une variable situé à un index inférieur à celui de la variable pointé par 'other'.
+                </div>
+
+                <!-- <= -->
+                <div class="func_title" id="vector_cit_op_lessequal">
+                    <span class="func_class">bool</span> operator<=(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si le ConstIterator actuel pointe sur une variable situé à un index inférieur ou égal à celui de la variable pointé par l'<a href="#vector_it">Iterator</a> 'other'.
+                </div>
+
+                <!-- <= -->
+                <div class="func_title" id="vector_cit_op_lessequal2">
+                    <span class="func_class">bool</span> operator<=(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si le ConstIterator actuel pointe sur une variable situé à un index inférieur ou égal à celui de la variable pointé par 'other'.
+                </div>
+
+                <!-- > -->
+                <div class="func_title" id="vector_cit_op_great">
+                    <span class="func_class">bool</span> operator>(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si le ConstIterator actuel pointe sur une variable situé à un index supérieur à celui de la variable pointé par l'<a href="#vector_it">Iterator</a> 'other'.
+                </div>
+
+                <!-- > -->
+                <div class="func_title" id="vector_cit_op_great2">
+                    <span class="func_class">bool</span> operator>(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si le ConstIterator actuel pointe sur une variable situé à un index supérieur à celui de la variable pointé par 'other'.
+                </div>
+
+                <!-- >= -->
+                <div class="func_title" id="vector_cit_op_greatequal">
+                    <span class="func_class">bool</span> operator>=(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si le ConstIterator actuel pointe sur une variable situé à un index supérieur ou égal à celui de la variable pointé par l'<a href="#vector_it">Iterator</a> 'other'.
+                </div>
+
+                <!-- >= -->
+                <div class="func_title" id="vector_cit_op_greatequal2">
+                    <span class="func_class">bool</span> operator>=(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si le ConstIterator actuel pointe sur une variable situé à un index supérieur ou égal à celui de la variable pointé par 'other'.
+                </div>
+
+                <!-- ++ -->
+                <div class="func_title" id="vector_cit_op_preinc">
+                    <span class="func_class">ConstIterator</span>& operator++()
+                </div>
+                <div class="class_desc">
+                    Opérateur de pré-incrément. Fait avancer le ConstIterator d'un index dans le <a href="#vector">Vector</a> et renvoie une référence sur ce même ConstIterator.
+                    Du fait du fonctionnement du pré-incrément, cet opérateur est plus rapide que l'opérateur de post-incrément <a href="#vector_cit_op_postinc">operator++(int)</a>.
+                </div>
+
+                <!-- ++ -->
+                <div class="func_title" id="vector_cit_op_postinc">
+                    <span class="func_class">ConstIterator</span> operator++(<span class="func_class">int</span>)
+                </div>
+                <div class="class_desc">
+                    Opérateur de post-incrément. Fait avancer le ConstIterator d'un index dans le <a href="#vector">Vector</a> et renvoie une copie de ce ConstIterator.
+                    Du fait du fonctionnement du post-incrément, cet opérateur est moins rapide que l'opérateur de pré-incrément <a href="#vector_cit_op_preinc">operator++()</a>.
+                </div>
+
+                <!-- -- -->
+                <div class="func_title" id="vector_cit_op_predec">
+                    <span class="func_class">ConstIterator</span>& operator--()
+                </div>
+                <div class="class_desc">
+                    Opérateur de pré-décrément. Fait reculer le ConstIterator d'un index dans le <a href="#vector">Vector</a> et renvoie une référence sur ce même ConstIterator.
+                    Du fait du fonctionnement du pré-décrément, cet opérateur est plus rapide que l'opérateur de post-décrément <a href="#vector_cit_op_postdec">operator--(int)</a>.
+                </div>
+
+                <!-- -- -->
+                <div class="func_title" id="vector_cit_op_postdec">
+                    <span class="func_class">ConstIterator</span> operator--(<span class="func_class">int</span>)
+                </div>
+                <div class="class_desc">
+                    Opérateur de post-décrément. Fait reculer le ConstIterator d'un index dans le <a href="#vector">Vector</a> et renvoie une copie de ce ConstIterator.
+                    Du fait du fonctionnement du post-décrément, cet opérateur est moins rapide que l'opérateur de pré-décrément <a href="#vector_cit_op_predec">operator--()</a>.
+                </div>
+
+                <!-- += -->
+                <div class="func_title" id="vector_cit_op_pluseq">
+                    <span class="func_class">ConstIterator</span>& operator+=(<span class="func_class">int</span> <span class="func_val">i</span>)
+                </div>
+                <div class="class_desc">
+                    Fait avancer le ConstIterator de 'i' index dans le <a href="#vector">Vector</a> et renvoie une référence sur ce même ConstIterator.
+                </div>
+
+                <!-- -= -->
+                <div class="func_title" id="vector_cit_op_minuseq">
+                    <span class="func_class">ConstIterator</span>& operator-=(<span class="func_class">int</span> <span class="func_val">i</span>)
+                </div>
+                <div class="class_desc">
+                    Fait reculer le ConstIterator de 'i' index dans le <a href="#vector">Vector</a> et renvoie une référence sur ce même ConstIterator.
+                </div>
+
+                <!-- + -->
+                <div class="func_title" id="vector_cit_op_plus">
+                    <span class="func_class">ConstIterator</span> operator+(<span class="func_class">int</span> <span class="func_val">i</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Renvoie un nouveau ConstIterator à 'i' index de plus dans le <a href="#vector">Vector</a>.
+                </div>
+
+                <!-- - -->
+                <div class="func_title" id="vector_cit_op_minus">
+                    <span class="func_class">ConstIterator</span> operator-(<span class="func_class">int</span> <span class="func_val">i</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Renvoie un nouveau ConstIterator à 'i' index de moins dans le <a href="#vector">Vector</a>.
+                </div>
+
+                <!-- - -->
+                <div class="func_title" id="vector_cit_op_minus2">
+                    <span class="func_class">int</span> operator-(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne le nombre d'index séparant deux ConstIterator. Si le résultat est positif alors le ConstIterator 'other' se situe à un index supérieur à le ConstIterator courant. Si le résultat est
+                    négatif alors le ConstIterator 'other' est à index inférieur à le ConstIterator courant.
+                </div>
+
+            </div>
+
+
 
 
         </div>
@@ -409,7 +910,31 @@
                 <span>hérite de : </span><a href="#vector"><span class="bold">Vector</span></a>
             </div>
 
-            <h3>En chantier</h3>
+            <h3>Description</h3>
+            <div class="class_desc">
+                Stack est un conteneur héritant de <a href="#vector">Vector</a>. Tous les membres de la classe <a href="#vector">Vector</a> sont disponible pour le Stack. 
+                Seules les méthodes de commodité <a href="#stack_push">push()</a> et <a href="#stack_pop">pop()</a> sont ajoutés pour respecter les conventions de nommage.
+            </div>
+
+
+
+            <h3>Fonctions public</h3>
+
+            <!-- PUSH -->
+            <div class="func_title" id="stack_push">
+                <span class="func_class">void</span> push(<span class="const">const</span> <span class="func_class">T</span> &<span class="func_val">value</span>)
+            </div>
+            <div class="class_desc">
+                Ajoute la variable 'value' à la fin du Stack. Equivalent à la méthode <a href="#vector_append">append()</a> du <a href="#vector">Vector</a>.
+            </div>
+
+            <!-- POP -->
+            <div class="func_title" id="stack_pop">
+                <span class="func_class">T</span> pop()
+            </div>
+            <div class="class_desc">
+                Supprime la variable au dernier index du Stack et la renvoie. Equivalent à la méthode <a href="#vector_takelast">takeLast()</a> du <a href="#vector">Vector</a>.
+            </div>
 
         </div>
 
@@ -424,7 +949,462 @@
                 <span>namespace : </span><span class="bold">ard_c</span>
             </div>
 
-            <h3>En chantier</h3>
+            <h3>Description</h3>
+            <div class="class_desc">
+                La classe Queue est une liste chainée. Sa structure interne est très différente d'un <a href="#vector">Vector</a> qui est basé sur un array.
+                Les conteneur basés sur des arrays permettent des temps d'accès constant en lecture sur n'importe quel index du conteneur. Quant à elles, 
+                les listes chainés oblige à parcourir tout les index du premier ( ou du dernier ) à l'index recherché pour y accéder. En revanche les ajouts, 
+                les insertions et les suppressions n'oblige pas à réallouer la mémoire et apportent dans la plupart des cas de meilleures performances.
+            </div>
+
+            <div class="class_desc">
+                L'utilisation standard d'un Queue est d'en faire un conteneur FIFO ( first-in-first-out ). Les méthodes <a href="#queue_enqueue">enqueue()</a> 
+                et <a href="#queue_dequeue">dequeue()</a> permettent ce fonctionnement.
+            </div>
+
+
+
+            <h3>Fonctions public</h3>
+
+            <!-- CTOR -->
+            <div class="func_title" id="queue_ctor">
+                Queue()
+            </div>
+            <div class="class_desc">
+                Construit un nouveau Queue vide.
+            </div>
+
+            <!-- CTOR COPY -->
+            <div class="func_title" id="queue_ctor_cpy">
+                Queue(<span class="const">const</span> <span class="func_class">Queue</span>&lt;<span class="func_class">T</span>&gt; &<span class="func_val">other</span>)
+            </div>
+            <div class="class_desc">
+                Construit un nouveau Queue à partir d'une instance existante. Créer un partage avec la data interne du Queue passé en argument.
+            </div>
+
+            <!-- DTOR -->
+            <div class="func_title" id="queue_dtor">
+                ~Queue()
+            </div>
+            <div class="class_desc">
+                Détruit le Queue. S'il n'est pas partagé avec un autre Queue la data interne est également détruite et la mémoire est libérée.
+            </div>
+
+            <!-- AT -->
+            <div class="func_title" id="queue_at">
+                <span class="const">const</span> <span class="func_class">T</span> &at(<span class="func_class">int</span> <span class="func_val">index</span>) <span class="const">const</span>
+            </div>
+            <div class="class_desc">
+                Retourne la variable stocké à l'index 'index'. L'accès est en lecture seule, si vous souhaitez faire une modification utilisé <a href="#queue_op_at">l'opérateur []</a>.
+            </div>
+
+            <!-- BEGIN -->
+            <div class="func_title" id="queue_begin">
+                <span class="func_class">Iterator</span> begin()
+            </div>
+            <div class="class_desc">
+                Retourne un <a href="#queue_it">Iterator</a> pointant sur le premier index du Queue.
+            </div>
+
+            <!-- CBEGIN -->
+            <div class="func_title" id="queue_cbegin">
+                <span class="func_class">ConstIterator</span> cbegin() <span class="const">const</span>
+            </div>
+            <div class="class_desc">
+                Retourne un <a href="#queue_cit">ConstIterator</a> pointant sur le premier index du Queue.
+            </div>
+
+            <!-- CEND -->
+            <div class="func_title" id="queue_cend">
+                <span class="func_class">ConstIterator</span> cend() <span class="const">const</span>
+            </div>
+            <div class="class_desc">
+                Retourne un <a href="#queue_cit">ConstIterator</a> pointant sur un index fictif se situant un cran après le dernier index du Queue.
+            </div>
+
+            <!-- DEQUEUE -->
+            <div class="func_title" id="queue_dequeue">
+                <span class="func_class">T</span> dequeue()
+            </div>
+            <div class="class_desc">
+                Supprime le premier index du Queue et le retourne.
+            </div>
+
+            <!-- END -->
+            <div class="func_title" id="queue_end">
+                <span class="func_class">Iterator</span> end()
+            </div>
+            <div class="class_desc">
+                Retourne un <a href="#queue_it">Iterator</a> pointant sur un index fictif se situant un cran après le dernier index du Queue.
+            </div>
+
+            <!-- ENQUEUE -->
+            <div class="func_title" id="queue_enqueue">
+                <span class="func_class">void</span> enqueue(<span class="const">const</span> <span class="func_class">T</span> &<span class="func_val">value</span>)
+            </div>
+            <div class="class_desc">
+                Ajoute 'value' à la fin du Queue.
+            </div>
+
+            <!-- FIRST -->
+            <div class="func_title" id="queue_first">
+                <span class="func_class">T</span> &first()
+            </div>
+            <div class="class_desc">
+                Retourne la variable au début du Queue.
+            </div>
+
+            <!-- FIRST 2 -->
+            <div class="func_title" id="queue_cfirst">
+                <span class="const">const</span> <span class="func_class">T</span> &first() <span class="const">const</span>
+            </div>
+            <div class="class_desc">
+                Retourne la variable au début du Queue, en lecture seule.
+            </div>
+
+            <!-- ISEMPTY -->
+            <div class="func_title" id="queue_isempty">
+                <span class="func_class">bool</span> isEmpty() <span class="const">const</span>
+            </div>
+            <div class="class_desc">
+                Renvoie true si le Queue est vide, sinon renvoie false.
+            </div>
+
+            <!-- LAST -->
+            <div class="func_title" id="queue_last">
+                <span class="func_class">T</span> &last()
+            </div>
+            <div class="class_desc">
+                Retourne la variable à la fin du Queue.
+            </div>
+
+            <!-- LAST 2 -->
+            <div class="func_title" id="queue_clast">
+                <span class="const">const</span> <span class="func_class">T</span> &last() <span class="const">const</span>
+            </div>
+            <div class="class_desc">
+                Retourne la variable à la fin du Queue, en lecture seule.
+            </div>
+
+            <!-- SIZE -->
+            <div class="func_title" id="queue_size">
+                <span class="func_class">int</span> size() <span class="const">const</span>
+            </div>
+            <div class="class_desc">
+                Renvoie le nombre d'index stocké dans le Queue.
+            </div>
+
+
+
+            <h3>Opérateur</h3>
+
+            <!-- [] -->
+            <div class="func_title" id="queue_op_at">
+                <span class="func_class">T</span> &operator[](<span class="func_class">int</span> <span class="func_val">index</span>)
+            </div>
+            <div class="class_desc">
+                Renvoie la variable stocké à l'index 'index' du Queue.
+            </div>
+
+            <!-- [] 2 -->
+            <div class="func_title" id="queue_op_at2">
+                <span class="const">const</span> <span class="func_class">T</span> &operator[](<span class="func_class">int</span> <span class="func_val">index</span>) <span class="const">const</span>
+            </div>
+            <div class="class_desc">
+                Renvoie la variable stocké à l'index 'index' du Queue en lecture seule. Equivalent à la méthode <a href="#queue_at">at()</a>.
+            </div>
+
+            <!-- = -->
+            <div class="func_title" id="queue_op_set">
+                <span class="func_class">Vector</span>&lt;<span class="func_class">T</span>&gt; &operator=(<span class="const">const</span> <span class="func_class">Queue</span>&lt;<span class="func_class">T</span>&gt; &<span class="func_val">other</span>)
+            </div>
+            <div class="class_desc">
+                Partage la data interne de 'other' avec le Queue à gauche de l'expression. Ne provoque pas de deep copy de la data tant qu'aucune modification n'est apporté à l'un des deux Queue.
+            </div>
+
+            <!-- == -->
+            <div class="func_title" id="queue_op_equal">
+                <span class="func_class">bool</span> operator==(<span class="const">const</span> <span class="func_class">Queue</span>&lt;<span class="func_class">T</span>&gt; &<span class="func_val">other</span>) <span class="const">const</span>
+            </div>
+            <div class="class_desc">
+                Renvoie true si les deux Queue de l'expression sont égaux, ce qui signifie que les deux Queue partage la même data interne. L'équivalence est évalué en comparant les adresses des struct
+                de data interne : si les deux Queue ne sont pas partagés les adresses ne seront pas les mêmes.
+            </div>
+
+
+
+
+            <h3>Classes internes</h3>
+
+            <!-- ITERATOR -->
+            <div class="subclass_ctn">
+                <h2 id="queue_it">Iterator</h2>
+                <div class="class_sub">
+                    <span>déclaration : </span><span class="bold">Queue&lt;T&gt;::Iterator</span>
+                </div>
+
+                <h3>Description</h3>
+
+                <div class="class_desc">
+                    Les Iterator sont des objets pointant sur une des variables contenu dans le <a href="#queue">Queue</a> ayant fourni l'Iterator.
+                    Ils servent de curseur permettant de ce déplacer dans le <a href="#queue">Queue</a>, d'accéder et de modifier ses variables.
+                    Instancier un Iterator avec les méthodes <a href="#queue_begin">begin()</a> et <a href="#queue_end">end()</a> implique une rupture
+                    du partage entre les <a href="#queue">Queue</a> et une deep-copy ( <a href="#cpy_on_wrt">voir partage implicite</a> ).
+                </div>
+                <div class="class_desc">
+                    Si vous souhaitez utiliser les Iterator en lecture seule utiliser la classe <a href="#queue_cit">ConstIterator</a>, fourni par les méthodes
+                    <a href="#queue_cbegin">cbegin()</a> et <a href="#queue_cend">cend()</a>, qui ne provoquera pas de deep-copy.
+                </div>
+
+
+
+                <h3>Fonctions public</h3>
+
+                <!-- CTOR -->
+                <div class="func_title" id="queue_it_ctor">
+                    Iterator()
+                </div>
+                <div class="class_desc">
+                    Construit un nouvel Iterator vierge, non associé à un Queue. Ce constructeur ne devrait pas être appelé, pour instancier un nouvel Iterator
+                    utilisé les méthodes <a href="#queue_begin">begin()</a> ou <a href="#queue_end">end()</a> de la classe <a href="#queue">Queue</a>.
+                </div>
+
+                <!-- CTOR 2 -->
+                <div class="func_title" id="queue_it_ctor2">
+                    Iterator(<span class="const">typename</span> <span class="func_class">QueueData</span>&lt;<span class="func_class">T</span>&gt;::<span class="func_class">Node</span> *<span class="func_val">n</span>)
+                </div>
+                <div class="class_desc">
+                    Construit un nouvel Iterator pointant sur le Node 'n'. La variable 'n' doit être un pointeur vers un QueueData&lt;T&gt;::Node contenu dans la structure de data interne du Queue 
+                    que l'on veut parcourir. Ce constructeur n'a pas à être appelé, pour instancier de nouveaux Iterator utiliser les méthodes <a href="#queue_begin">begin()</a> ou 
+                    <a href="#queue_end">end()</a> de la classe <a href="#queue">Queue</a>.
+                </div>
+
+
+
+                <h3>Opérateurs</h3>
+
+                <!-- * -->
+                <div class="func_title" id="queue_it_op_star">
+                    <span class="func_class">T</span>& operator*() <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne la variable à laquelle l'Iterator est associé.
+                </div>
+
+                <!-- -> -->
+                <div class="func_title" id="queue_it_op_arrow">
+                    <span class="func_class">T</span>* operator->() <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne un pointeur vers la variable à laquelle l'Iterator est associé.
+                </div>
+
+                <!-- == -->
+                <div class="func_title" id="queue_it_op_equal">
+                    <span class="func_class">bool</span> operator==(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si l'Iterator actuel et 'other' sont associés à la même variable.
+                </div>
+
+                <!-- == -->
+                <div class="func_title" id="queue_it_op_equal2">
+                    <span class="func_class">bool</span> operator==(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si l'Iterator actuel et le <a href="#queue_cit">ConstIterator</a> 'other' sont associés à la même variable.
+                </div>
+
+                <!-- != -->
+                <div class="func_title" id="queue_it_op_diff">
+                    <span class="func_class">bool</span> operator!=(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si l'Iterator actuel et 'other' ne sont pas associés à la même variable.
+                </div>
+
+                <!-- != -->
+                <div class="func_title" id="queue_it_op_diff2">
+                    <span class="func_class">bool</span> operator!=(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si l'Iterator actuel et le <a href="#queue_cit">ConstIterator</a> 'other' ne sont pas associés à la même variable.
+                </div>
+
+                <!-- ++ -->
+                <div class="func_title" id="queue_it_op_preinc">
+                    <span class="func_class">Iterator</span>& operator++()
+                </div>
+                <div class="class_desc">
+                    Opérateur de pré-incrément. Fait avancer l'Iterator d'un index dans le <a href="#queue">Queue</a> et renvoie une référence sur ce même Iterator.
+                    Du fait du fonctionnement du pré-incrément, cet opérateur est plus rapide que l'opérateur de post-incrément <a href="#queue_it_op_postinc">operator++(int)</a>.
+                </div>
+
+                <!-- ++ -->
+                <div class="func_title" id="queue_it_op_postinc">
+                    <span class="func_class">Iterator</span> operator++(<span class="func_class">int</span>)
+                </div>
+                <div class="class_desc">
+                    Opérateur de post-incrément. Fait avancer l'Iterator d'un index dans le <a href="#queue">Queue</a> et renvoie une copie de cet Iterator.
+                    Du fait du fonctionnement du post-incrément, cet opérateur est moins rapide que l'opérateur de pré-incrément <a href="#queue_it_op_preinc">operator++()</a>.
+                </div>
+
+                <!-- -- -->
+                <div class="func_title" id="queue_it_op_predec">
+                    <span class="func_class">Iterator</span>& operator--()
+                </div>
+                <div class="class_desc">
+                    Opérateur de pré-décrément. Fait reculer l'Iterator d'un index dans le <a href="#queue">Queue</a> et renvoie une référence sur ce même Iterator.
+                    Du fait du fonctionnement du pré-décrément, cet opérateur est plus rapide que l'opérateur de post-décrément <a href="#queue_it_op_postdec">operator--(int)</a>.
+                </div>
+
+                <!-- -- -->
+                <div class="func_title" id="queue_it_op_postdec">
+                    <span class="func_class">Iterator</span> operator--(<span class="func_class">int</span>)
+                </div>
+                <div class="class_desc">
+                    Opérateur de post-décrément. Fait reculer l'Iterator d'un index dans le <a href="#queue">Queue</a> et renvoie une copie de cet Iterator.
+                    Du fait du fonctionnement du post-décrément, cet opérateur est moins rapide que l'opérateur de pré-décrément <a href="#queue_it_op_predec">operator--()</a>.
+                </div>
+
+            </div>
+
+
+
+            <br />
+
+            <!-- CONSTITERATOR -->
+            <div class="subclass_ctn">
+                <h2 id="queue_cit">ConstIterator</h2>
+                <div class="class_sub">
+                    <span>déclaration : </span><span class="bold">Queue&lt;T&gt;::ConstIterator</span>
+                </div>
+
+                <h3>Description</h3>
+
+                <div class="class_desc">
+                    Les ConstIterator sont des objets pointant sur une des variables contenu dans le <a href="#queue">Queue</a> ayant fourni le ConstIterator.
+                    Ils servent de curseur permettant de ce déplacer dans le <a href="#queue">Queue</a> et d'accéder à ses variables en lecture seule.
+                    Instancier un ConstIterator avec les méthodes <a href="#queue_cbegin">cbegin()</a> et <a href="#queue_cend">cend()</a> ne provoque pas de rupture
+                    du partage entre les <a href="#queue">Queue</a> ( <a href="#cpy_on_wrt">voir partage implicite</a> ).
+                </div>
+                <div class="class_desc">
+                    Si vous souhaitez modifier les variables du <a href="#queue">Queue</a> à partir de l'itérateur, utilisé la classe <a href="#queue_it">Iterator</a>, fourni par les méthodes
+                    <a href="#queue_begin">begin()</a> et <a href="#queue_end">end()</a>.
+                </div>
+
+
+
+                <h3>Fonctions public</h3>
+
+                <!-- CTOR -->
+                <div class="func_title" id="queue_cit_ctor">
+                    ConstIterator()
+                </div>
+                <div class="class_desc">
+                    Construit un nouveau ConstIterator vierge, non associé à un Queue. Ce constructeur ne devrait pas être appelé, pour instancier un nouveau ConstIterator
+                    utilisé les méthodes <a href="#queue_cbegin">cbegin()</a> ou <a href="#queue_cend">cend()</a> de la classe <a href="#queue">Queue</a>.
+                </div>
+
+                <!-- CTOR 2 -->
+                <div class="func_title" id="queue_cit_ctor2">
+                    ConstIterator(<span class="const">typename</span> <span class="func_class">QueueData</span>&lt;<span class="func_class">T</span>&gt;::<span class="func_class">Node</span> *<span class="func_val">n</span>)
+                </div>
+                <div class="class_desc">
+                    Construit un nouveau ConstIterator pointant sur la variable 'n'. La variable 'n' doit être un pointeur vers un QueueData&lt;T&gt;::Node contenu dans la structure de data interne du Queue
+                    que l'on veut parcourir. Ce constructeur n'a pas à être appelé, pour instancier de nouveaux ConstIterator utiliser les méthodes <a href="#queue_cbegin">cbegin()</a> ou 
+                    <a href="#queue_cend">cend()</a> de la classe <a href="#queue">Queue</a>.
+                </div>
+
+
+
+                <h3>Opérateurs</h3>
+
+                <!-- * -->
+                <div class="func_title" id="queue_cit_op_star">
+                    <span class="const">const</span> <span class="func_class">T</span>& operator*() <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne la variable à laquelle le ConstIterator est associé, en lecture seule.
+                </div>
+
+                <!-- -> -->
+                <div class="func_title" id="queue_cit_op_arrow">
+                    <span class="const">const</span> <span class="func_class">T</span>* operator->() <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne un pointeur vers la variable à laquelle le ConstIterator est associé, en lecture seule.
+                </div>
+
+                <!-- == -->
+                <div class="func_title" id="queue_cit_op_equal">
+                    <span class="func_class">bool</span> operator==(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si le ConstIterator actuel et l'<a href="#queue_it">Iterator</a> 'other' sont associés à la même variable.
+                </div>
+
+                <!-- == -->
+                <div class="func_title" id="queue_cit_op_equal2">
+                    <span class="func_class">bool</span> operator==(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si le ConstIterator actuel et 'other' sont associés à la même variable.
+                </div>
+
+                <!-- != -->
+                <div class="func_title" id="queue_cit_op_diff">
+                    <span class="func_class">bool</span> operator!=(<span class="const">const</span> <span class="func_class">Iterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si le ConstIterator actuel et l'<a href="#queue_it">Iterator</a> 'other' ne sont pas associés à la même variable.
+                </div>
+
+                <!-- != -->
+                <div class="func_title" id="queue_cit_op_diff2">
+                    <span class="func_class">bool</span> operator!=(<span class="const">const</span> <span class="func_class">ConstIterator</span> &<span class="func_val">other</span>) <span class="const">const</span>
+                </div>
+                <div class="class_desc">
+                    Retourne true si le ConstIterator actuel et 'other' ne sont pas associés à la même variable.
+                </div>
+
+                <!-- ++ -->
+                <div class="func_title" id="queue_cit_op_preinc">
+                    <span class="func_class">ConstIterator</span>& operator++()
+                </div>
+                <div class="class_desc">
+                    Opérateur de pré-incrément. Fait avancer le ConstIterator d'un index dans le <a href="#queue">Queue</a> et renvoie une référence sur ce même ConstIterator.
+                    Du fait du fonctionnement du pré-incrément, cet opérateur est plus rapide que l'opérateur de post-incrément <a href="#queue_cit_op_postinc">operator++(int)</a>.
+                </div>
+
+                <!-- ++ -->
+                <div class="func_title" id="queue_cit_op_postinc">
+                    <span class="func_class">ConstIterator</span> operator++(<span class="func_class">int</span>)
+                </div>
+                <div class="class_desc">
+                    Opérateur de post-incrément. Fait avancer le ConstIterator d'un index dans le <a href="#queue">Queue</a> et renvoie une copie de ce ConstIterator.
+                    Du fait du fonctionnement du post-incrément, cet opérateur est moins rapide que l'opérateur de pré-incrément <a href="#queue_cit_op_preinc">operator++()</a>.
+                </div>
+
+                <!-- -- -->
+                <div class="func_title" id="queue_cit_op_predec">
+                    <span class="func_class">ConstIterator</span>& operator--()
+                </div>
+                <div class="class_desc">
+                    Opérateur de pré-décrément. Fait reculer le ConstIterator d'un index dans le <a href="#queue">Queue</a> et renvoie une référence sur ce même ConstIterator.
+                    Du fait du fonctionnement du pré-décrément, cet opérateur est plus rapide que l'opérateur de post-décrément <a href="#queue_cit_op_postdec">operator--(int)</a>.
+                </div>
+
+                <!-- -- -->
+                <div class="func_title" id="queue_cit_op_postdec">
+                    <span class="func_class">ConstIterator</span> operator--(<span class="func_class">int</span>)
+                </div>
+                <div class="class_desc">
+                    Opérateur de post-décrément. Fait reculer le ConstIterator d'un index dans le <a href="#queue">Queue</a> et renvoie une copie de ce ConstIterator.
+                    Du fait du fonctionnement du post-décrément, cet opérateur est moins rapide que l'opérateur de pré-décrément <a href="#queue_cit_op_predec">operator--()</a>.
+                </div>
+
+            </div>
 
         </div>
     </div>
